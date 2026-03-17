@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Website Layout Tutorial</title> <link rel="stylesheet" href="style.css">
+</head> <body>
+<div class="wrapper">
+  <header class="banner">
+    <img src="banner.png" alt="Banner" style="width: 100%; display: block;">
+  </header>
+  <nav>
+    <a href="index.html" class="logo">Cannon's Porfolio</a>
+
+    <ul>
+      <li><a href="index.html" class="nav-link active">Home</a></li>
+      <li><a href="certs.html" class="nav-link">Certifications</a></li>
+      <li><a href="games.html" class="nav-link">Games & More</a></li>
+      <li><a href="#" class="nav-link">Contact</a></li>
+    </ul>
+  </nav>
+  
+  <main class="content">
+    <h2>Games & More</h2>
+    <h3>KaBoom</h3>
+    <p>A 2d Rocket Jumping playformer developed in Flowlab</p>
+    <p>controls: A and D to move,
+    left click screen to rocket jump,
+    F for fullscreen</p>
+    <button onclick="toggleGame()">Play Game</button>
+
+<!-- The game container (hidden by default) -->
+    <div id="game-container" style="display: none; text-align: center;">
+    <iframe 
+        src="https://flowlab.io/game/embed/2610623?responsive=true" allowfullscreen 
+        width="800"  
+        height="600"
+        style="border: none;">
+    </iframe>
+    </div>
+
+<script>
+  function toggleGame() {
+    const container = document.getElementById("game-container");
+    
+    if (container.style.display === "none") {
+      container.style.display = "block";
+    } else {
+      container.style.display = "none";
+    }
+  }
+</script>
+  </main>
+  <footer class="footer">
+    <p>&copy; 2024 Your Website. All rights reserved.</p> </footer>
+</div>
+</body> </html>
