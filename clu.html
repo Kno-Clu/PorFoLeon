@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects | Cannon's Portfolio</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <header class="banner">
+    <a href="index.html">
+      <img src="banner.png" alt="Cannon's Portfolio Banner" style="width: 100%; display: block;">
+    </a>
+  </header>
+
+  <nav>
+    <a href="index.html" class="logo">Cannon's Portfolio</a>
+    <ul>
+      <li><a href="index.html" class="nav-link">Home</a></li>
+      <li><a href="certs.html" class="nav-link">Certifications</a></li>
+      <li><a href="games.html" class="nav-link">Games & More</a></li>
+      <li><a href="may.html" class="nav-link active">Projects</a></li>
+      <li><a href="https://docs.google.com/document/d/1q7SF2ukgMsfxenHtZbpPK2Q-_2nN9uxtM6MdBdebyY8/edit?usp=sharing" target="_blank" class="nav-link">Resume</a></li>
+    </ul>
+  </nav>
+
+  <main class="content">
+    <h1>My Projects</h1>
+
+    <div class="carousel">
+      <button class="carousel-btn" id="prevBtn">&#8592;</button>
+
+      <div class="slides" id="slides">
+
+        <div class="slide">
+          <img src="htl.png" alt="HTML and CSS project screenshot">
+          <h3>Portfolio Website</h3>
+          <p>Built a multi-page portfolio site from scratch using HTML and CSS. Learned about layouts, flexbox, navigation bars, and SEO meta tags.</p>
+        </div>
+
+        <div class="slide">
+          <img src="py.png" alt="Python project screenshot">
+          <h3>Python Project</h3>
+          <p>Wrote a Python program that demonstrated core programming concepts like loops, functions, and conditionals.</p>
+        </div>
+
+        <div class="slide">
+          <img src="bwl.png" alt="Bread Dating Sim">
+          <h3>Baked With love</h3>
+          <p>Enter North-Yeast High and date a cast of Bread Based Characters</p>
+        </div>
+
+      </div>
+
+      <button class="carousel-btn" id="nextBtn">&#8594;</button>
+    </div>
+
+    <!-- Button sits here, under the carousel -->
+    <!-- Replace your carousel-footer div with this -->
+  <div class="carousel-footer">
+    <span id="slide-counter">1 / 2</span>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-bar"></div>
+    </div>
+    <a id="slide-link" href="#" target="_blank" class="project-link-btn">View Project</a>
+  </div>
+
+  </main>
+
+  <footer class="footer">
+    <p>&copy; 2026 Cannon's Portfolio. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  const slideLinks = [
+    { url: "https://yourproject1.com", label: "Check it Out!" },
+    { url: "https://yourproject2.com", label: "Check it Out!" },
+    { url: "https://studio.code.org/projects/gamelab/72ae4f8c-116f-49b3-9bb4-18049adadac4", label: "Check it Out!" },
+  ];
+
+  const slides = document.getElementById('slides');
+  const linkBtn = document.getElementById('slide-link');
+  const counter = document.getElementById('slide-counter');
+  const progressBar = document.getElementById('progress-bar');
+  const total = document.querySelectorAll('.slide').length;
+  let current = 0;
+
+  function updateCounter() {
+    counter.textContent = `${current + 1} / ${total}`;
+  }
+
+  function updateProgress() {
+    const percent = ((current + 1) / total) * 100;
+    progressBar.style.width = `${percent}%`;
+  }
+
+  function updateLink() {
+    const entry = slideLinks[current];
+    if (entry && entry.url) {
+      linkBtn.href = entry.url;
+      linkBtn.textContent = entry.label || "View Project";
+      linkBtn.style.display = "inline-block";
+    } else {
+      linkBtn.style.display = "none";
+    }
+  }
+
+  function goTo(index) {
+    current = (index + total) % total;
+    slides.style.transform = `translateX(-${current * 100}%)`;
+    updateCounter();
+    updateProgress();
+    updateLink();
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+
+  // Initialize everything on load
+  updateCounter();
+  updateProgress();
+  updateLink();
+</script>
+</body>
+</html>
