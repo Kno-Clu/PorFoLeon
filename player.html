@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Music Player</title>
+</head>
+<body>
+<script>
+const tracks = [
+  "audio/song1.mp3",
+  "audio/song2.mp3",
+  "audio/song3.mp3"
+];
+
+function shuffle(array) {
+  return array.sort(() => Math.random() - 0.5);
+}
+
+// Load or create playlist
+let playlist = JSON.parse(localStorage.getItem("playlist"));
+
+if (!playlist) {
+  playlist = shuffle([...tracks]);
+  localStorage.setItem("playlist", JSON.stringify(playlist));
+}
+
+let index = parseInt(localStorage.getItem("trackIndex")) || 0;
+
+const audio = new Audio(playlist[index]);
+
+// Resume time
+const savedTime = parseFloat(localStorage.getItem("trackTime"));
+if (savedTime) {
+  audio.currentTime = savedTime;
+}
+
+// Save progress
+audio.addEventListener("timeupdate", () => {
+  localStorage.setItem("trackTime", audio.currentTime);
+});
+
+// Next track logic
+audio.addEventListener("ended", () => {
+  index = (index + 1) % playlist.length;
+  localStorage.setItem("trackIndex", index);
+  localStorage.setItem("trackTime", 0);
+
+  audio.src = playlist[index];
+  audio.play();
+});
+
+// 👇 KEY: expose play function
+window.startPlayback = () => {
+  audio.play().catch(() => {
+    console.log("Playback blocked until user interaction.");
+  });
+};
+
+// Optional controls
+window.nextTrack = () => {
+  index = (index + 1) % playlist.length;
+  localStorage.setItem("trackIndex", index);
+  localStorage.setItem("trackTime", 0);
+
+  audio.src = playlist[index];
+  audio.play();
+};
+</script>
+</body>
+</html>

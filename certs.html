@@ -128,6 +128,30 @@
 
   animate();
 </script>
+<script>
+let musicFrame;
+
+// Create iframe only once
+if (!window.name.includes("musicLoaded")) {
+  musicFrame = document.createElement("iframe");
+  musicFrame.src = "player.html";
+  musicFrame.style.display = "none";
+  document.body.appendChild(musicFrame);
+
+  window.name += "musicLoaded";
+} else {
+  musicFrame = document.querySelector("iframe");
+}
+
+// 👇 Start music on FIRST user interaction anywhere
+document.addEventListener("click", () => {
+  try {
+    musicFrame.contentWindow.startPlayback();
+  } catch (e) {
+    console.log("Player not ready yet");
+  }
+}, { once: true });
+</script>
 </body>
 
 </html>
