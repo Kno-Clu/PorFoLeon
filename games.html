@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Website Layout Tutorial</title> <link rel="stylesheet" href="style.css">
 </head> <body>
+  <canvas id="bubble-canvas"></canvas>
 <div class="wrapper">
   <header class="banner">
     <img src="banner.png" alt="Banner" style="width: 100%; display: block;">
@@ -53,4 +54,103 @@
   <footer class="footer">
     <p>&copy; 2024 Your Website. All rights reserved.</p> </footer>
 </div>
-</body> </html>
+<script>
+  const canvas = document.getElementById('bubble-canvas');
+  const ctx = canvas.getContext('2d');
+
+  // Resize canvas to fill window
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Bubble colors pulled from your palette
+  const colors = [
+    'rgba(192,157,195,',   // lavender
+    'rgba(151,171,212,',   // slate blue
+    'rgba(160,202,194,',   // soft teal
+    'rgba(255,202,187,',   // peachy pink
+    'rgba(195,222,235,',   // light blue
+    'rgba(225,182,219,',   // pink purple
+  ];
+
+  // Create a bunch of bubbles
+  const bubbles = Array.from({ length: 35 }, () => createBubble(true));
+
+  function createBubble(randomY = false) {
+    return {
+      x: Math.random() * window.innerWidth,
+      y: randomY ? Math.random() * window.innerHeight : window.innerHeight + 60,
+      radius: Math.random() * 40 + 10,        // 10px to 50px
+      speed: Math.random() * 0.6 + 0.2,       // slow drift
+      wobble: Math.random() * Math.PI * 2,     // starting wobble offset
+      wobbleSpeed: Math.random() * 0.02 + 0.005,
+      wobbleAmount: Math.random() * 2 + 1,     // how much it sways
+      color: colors[Math.floor(Math.random() * colors.length)],
+      opacity: Math.random() * 0.35 + 0.1,    // 0.1 to 0.45
+      gloss: Math.random() * 0.3 + 0.1,       // shine intensity
+    };
+  }
+
+  function drawBubble(b) {
+    ctx.save();
+
+    // Main bubble circle
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+    ctx.fillStyle = b.color + b.opacity + ')';
+    ctx.fill();
+
+    // Bubble outline
+    ctx.strokeStyle = b.color + (b.opacity + 0.1) + ')';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Glossy shine — small white oval in top left of bubble
+    const shineX = b.x - b.radius * 0.3;
+    const shineY = b.y - b.radius * 0.35;
+    const shineGrad = ctx.createRadialGradient(
+      shineX, shineY, 0,
+      shineX, shineY, b.radius * 0.5
+    );
+    shineGrad.addColorStop(0, `rgba(255,255,255,${b.gloss})`);
+    shineGrad.addColorStop(1, 'rgba(255,255,255,0)');
+
+    ctx.beginPath();
+    ctx.ellipse(shineX, shineY, b.radius * 0.45, b.radius * 0.3, -0.5, 0, Math.PI * 2);
+    ctx.fillStyle = shineGrad;
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    bubbles.forEach((b, i) => {
+      // Float upward
+      b.y -= b.speed;
+
+      // Gentle left-right wobble
+      b.wobble += b.wobbleSpeed;
+      b.x += Math.sin(b.wobble) * b.wobbleAmount;
+
+      // Draw it
+      drawBubble(b);
+
+      // Reset when it floats off the top
+      if (b.y + b.radius < 0) {
+        bubbles[i] = createBubble(false);
+      }
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+</script>
+</body>
+<canvas id="bubble-canvas"></canvas>
+ </html>
