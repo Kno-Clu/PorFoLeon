@@ -55,101 +55,383 @@
     <p>&copy; 2024 Your Website. All rights reserved.</p> </footer>
 </div>
 <script>
-  const canvas = document.getElementById('bubble-canvas');
-  const ctx = canvas.getContext('2d');
+const canvas = document.getElementById('bubble-canvas');
+const ctx = canvas.getContext('2d');
 
-  // Resize canvas to fill window
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  resize();
-  window.addEventListener('resize', resize);
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
 
-  // Bubble colors pulled from your palette
-  const colors = [
-    'rgba(192,157,195,',   // lavender
-    'rgba(151,171,212,',   // slate blue
-    'rgba(160,202,194,',   // soft teal
-    'rgba(255,202,187,',   // peachy pink
-    'rgba(195,222,235,',   // light blue
-    'rgba(225,182,219,',   // pink purple
+// Your palette colors
+const colors = [
+  'rgba(192,157,195,',  // lavender
+  'rgba(151,171,212,',  // slate blue
+  'rgba(160,202,194,',  // soft teal
+  'rgba(255,202,187,',  // peachy pink
+  'rgba(195,222,235,',  // light blue
+  'rgba(225,182,219,',  // pink purple
+];
+
+// ── 3D Math Helpers ──
+
+function rotateX(point, angle) {
+  const cos = Math.cos(angle), sin = Math.sin(angle);
+  return {
+    x: point.x,
+    y: point.y * cos - point.z * sin,
+    z: point.y * sin + point.z * cos
+  };
+}
+
+function rotateY(point, angle) {
+  const cos = Math.cos(angle), sin = Math.sin(angle);
+  return {
+    x: point.x * cos + point.z * sin,
+    y: point.y,
+    z: -point.x * sin + point.z * cos
+  };
+}
+
+function rotateZ(point, angle) {
+  const cos = Math.cos(angle), sin = Math.sin(angle);
+  return {
+    x: point.x * cos - point.y * sin,
+    y: point.x * sin + point.y * cos,
+    z: point.z
+  };
+}
+
+// Project 3D point to 2D screen
+function project(point, cx, cy, fov) {
+  const z = point.z + fov;
+  const scale = fov / Math.max(z, 1);
+  return {
+    x: cx + point.x * scale,
+    y: cy + point.y * scale,
+    scale: scale
+  };
+}
+
+// ── Shape Definitions ──
+
+function cubePoints(size) {
+  const h = size / 2;
+  return [
+    {x:-h,y:-h,z:-h},{x: h,y:-h,z:-h},{x: h,y: h,z:-h},{x:-h,y: h,z:-h},
+    {x:-h,y:-h,z: h},{x: h,y:-h,z: h},{x: h,y: h,z: h},{x:-h,y: h,z: h}
   ];
+}
 
-  // Create a bunch of bubbles
-  const bubbles = Array.from({ length: 35 }, () => createBubble(true));
+const cubeEdges = [
+  [0,1],[1,2],[2,3],[3,0], // front face
+  [4,5],[5,6],[6,7],[7,4], // back face
+  [0,4],[1,5],[2,6],[3,7]  // connecting edges
+];
 
-  function createBubble(randomY = false) {
-    return {
-      x: Math.random() * window.innerWidth,
-      y: randomY ? Math.random() * window.innerHeight : window.innerHeight + 60,
-      radius: Math.random() * 40 + 10,        // 10px to 50px
-      speed: Math.random() * 0.6 + 0.2,       // slow drift
-      wobble: Math.random() * Math.PI * 2,     // starting wobble offset
-      wobbleSpeed: Math.random() * 0.02 + 0.005,
-      wobbleAmount: Math.random() * 2 + 1,     // how much it sways
-      color: colors[Math.floor(Math.random() * colors.length)],
-      opacity: Math.random() * 0.35 + 0.1,    // 0.1 to 0.45
-      gloss: Math.random() * 0.3 + 0.1,       // shine intensity
-    };
+function pyramidPoints(size) {
+  const h = size / 2;
+  return [
+    {x: 0, y:-h*1.4, z: 0},   // apex
+    {x:-h, y: h, z:-h},
+    {x: h, y: h, z:-h},
+    {x: h, y: h, z: h},
+    {x:-h, y: h, z: h}
+  ];
+}
+
+const pyramidEdges = [
+  [0,1],[0,2],[0,3],[0,4],
+  [1,2],[2,3],[3,4],[4,1]
+];
+
+function diamondPoints(size) {
+  const h = size / 2;
+  return [
+    {x: 0, y:-h*1.5, z: 0},  // top
+    {x: 0, y: h*1.5, z: 0},  // bottom
+    {x: h, y: 0, z: 0},
+    {x:-h, y: 0, z: 0},
+    {x: 0, y: 0, z: h},
+    {x: 0, y: 0, z:-h}
+  ];
+}
+
+const diamondEdges = [
+  [0,2],[0,3],[0,4],[0,5],
+  [1,2],[1,3],[1,4],[1,5],
+  [2,4],[4,3],[3,5],[5,2]
+];
+
+// Ring — generates points around a circle
+function ringPoints(size, segments = 16) {
+  const points = [];
+  for (let i = 0; i < segments; i++) {
+    const angle = (i / segments) * Math.PI * 2;
+    points.push({
+      x: Math.cos(angle) * size,
+      y: Math.sin(angle) * size,
+      z: 0
+    });
+  }
+  return points;
+}
+
+function ringEdges(segments = 16) {
+  const edges = [];
+  for (let i = 0; i < segments; i++) {
+    edges.push([i, (i + 1) % segments]);
+  }
+  return edges;
+}
+
+// Star — 5 pointed
+function starPoints(size) {
+  const points = [];
+  for (let i = 0; i < 10; i++) {
+    const angle = (i / 10) * Math.PI * 2 - Math.PI / 2;
+    const r = i % 2 === 0 ? size : size * 0.45;
+    points.push({ x: Math.cos(angle) * r, y: Math.sin(angle) * r, z: 0 });
+  }
+  return points;
+}
+
+function starEdges() {
+  const edges = [];
+  for (let i = 0; i < 10; i++) {
+    edges.push([i, (i + 1) % 10]);
+  }
+  return edges;
+}
+
+// Sphere — latitude/longitude lines
+function sphereLines(size, stacks = 6, slices = 8) {
+  const lines = [];
+  // latitude rings
+  for (let i = 1; i < stacks; i++) {
+    const phi = (i / stacks) * Math.PI;
+    const ring = [];
+    for (let j = 0; j <= slices; j++) {
+      const theta = (j / slices) * Math.PI * 2;
+      ring.push({
+        x: size * Math.sin(phi) * Math.cos(theta),
+        y: size * Math.cos(phi),
+        z: size * Math.sin(phi) * Math.sin(theta)
+      });
+    }
+    lines.push(ring);
+  }
+  // longitude lines
+  for (let j = 0; j < slices; j++) {
+    const theta = (j / slices) * Math.PI * 2;
+    const line = [];
+    for (let i = 0; i <= stacks; i++) {
+      const phi = (i / stacks) * Math.PI;
+      line.push({
+        x: size * Math.sin(phi) * Math.cos(theta),
+        y: size * Math.cos(phi),
+        z: size * Math.sin(phi) * Math.sin(theta)
+      });
+    }
+    lines.push(line);
+  }
+  return lines;
+}
+
+// ── Shape Types ──
+const shapeTypes = ['cube', 'pyramid', 'diamond', 'ring', 'star', 'sphere'];
+
+function createShape() {
+  const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
+  const size = Math.random() * 80 + 25;
+  const color = colors[Math.floor(Math.random() * colors.length)];
+  const solid = Math.random() > 0.5; // mix of solid and wireframe
+  const opacity = Math.random() * 0.5 + 0.3;
+  const fillOpacity = Math.random() * 0.25 + 0.1;
+
+  let points, edges, sphereL;
+
+  if (type === 'cube')         { points = cubePoints(size);     edges = cubeEdges; }
+  else if (type === 'pyramid') { points = pyramidPoints(size);  edges = pyramidEdges; }
+  else if (type === 'diamond') { points = diamondPoints(size);  edges = diamondEdges; }
+  else if (type === 'ring')    { points = ringPoints(size);     edges = ringEdges(); }
+  else if (type === 'star')    { points = starPoints(size);     edges = starEdges(); }
+  else                         { sphereL = sphereLines(size); }
+
+  return {
+    type,
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    vx: (Math.random() - 0.5) * 0.4,  // slow horizontal drift
+    vy: (Math.random() - 0.5) * 0.4,  // slow vertical drift
+    rotX: Math.random() * Math.PI * 2,
+    rotY: Math.random() * Math.PI * 2,
+    rotZ: Math.random() * Math.PI * 2,
+    rotSpeedX: (Math.random() - 0.5) * 0.012,
+    rotSpeedY: (Math.random() - 0.5) * 0.015,
+    rotSpeedZ: (Math.random() - 0.5) * 0.008,
+    color,
+    solid,
+    opacity,
+    fillOpacity,
+    points,
+    edges,
+    sphereL,
+    fov: 180,
+    size
+  };
+}
+
+const shapes = Array.from({ length: 35 }, createShape);
+
+// ── Draw Functions ──
+
+function drawWireframe(s) {
+  if (!s.points || !s.edges) return;
+
+  // Rotate all points
+  const rotated = s.points.map(p => {
+    let r = rotateX(p, s.rotX);
+    r = rotateY(r, s.rotY);
+    r = rotateZ(r, s.rotZ);
+    return r;
+  });
+
+  // Sort edges by avg Z for basic depth
+  const projected = rotated.map(p => project(p, s.x, s.y, s.fov));
+
+  if (s.solid) {
+    // Fill faces with low opacity for solid look
+    // For cube draw faces
+    if (s.type === 'cube') {
+      const faces = [
+        [0,1,2,3],[4,5,6,7],
+        [0,1,5,4],[2,3,7,6],
+        [0,3,7,4],[1,2,6,5]
+      ];
+      faces.forEach(face => {
+        const avgZ = face.reduce((sum, i) => sum + rotated[i].z, 0) / face.length;
+        const brightness = Math.min(1, Math.max(0.4, (avgZ + s.size) / (s.size * 2)));
+        ctx.beginPath();
+        ctx.moveTo(projected[face[0]].x, projected[face[0]].y);
+        for (let i = 1; i < face.length; i++) {
+          ctx.lineTo(projected[face[i]].x, projected[face[i]].y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = s.color + (s.fillOpacity * brightness) + ')';
+        ctx.fill();
+      });
+    }
+
+    if (s.type === 'pyramid') {
+      const faces = [[1,2,0],[2,3,0],[3,4,0],[4,1,0],[1,2,3,4]];
+      faces.forEach(face => {
+        ctx.beginPath();
+        ctx.moveTo(projected[face[0]].x, projected[face[0]].y);
+        for (let i = 1; i < face.length; i++) {
+          ctx.lineTo(projected[face[i]].x, projected[face[i]].y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = s.color + s.fillOpacity + ')';
+        ctx.fill();
+      });
+    }
+
+    if (s.type === 'diamond') {
+      const faces = [
+        [0,2,4],[0,4,3],[0,3,5],[0,5,2],
+        [1,2,4],[1,4,3],[1,3,5],[1,5,2]
+      ];
+      faces.forEach(face => {
+        ctx.beginPath();
+        ctx.moveTo(projected[face[0]].x, projected[face[0]].y);
+        for (let i = 1; i < face.length; i++) {
+          ctx.lineTo(projected[face[i]].x, projected[face[i]].y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = s.color + s.fillOpacity + ')';
+        ctx.fill();
+      });
+    }
   }
 
-  function drawBubble(b) {
-    ctx.save();
+  // Draw edges (wireframe lines)
+  ctx.strokeStyle = s.color + s.opacity + ')';
+  ctx.lineWidth = 1.2;
 
-    // Main bubble circle
+  s.edges.forEach(([a, b]) => {
     ctx.beginPath();
-    ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-    ctx.fillStyle = b.color + b.opacity + ')';
-    ctx.fill();
-
-    // Bubble outline
-    ctx.strokeStyle = b.color + (b.opacity + 0.1) + ')';
-    ctx.lineWidth = 1.5;
+    ctx.moveTo(projected[a].x, projected[a].y);
+    ctx.lineTo(projected[b].x, projected[b].y);
     ctx.stroke();
+  });
+}
 
-    // Glossy shine — small white oval in top left of bubble
-    const shineX = b.x - b.radius * 0.3;
-    const shineY = b.y - b.radius * 0.35;
-    const shineGrad = ctx.createRadialGradient(
-      shineX, shineY, 0,
-      shineX, shineY, b.radius * 0.5
-    );
-    shineGrad.addColorStop(0, `rgba(255,255,255,${b.gloss})`);
-    shineGrad.addColorStop(1, 'rgba(255,255,255,0)');
+function drawSphere(s) {
+  if (!s.sphereL) return;
 
-    ctx.beginPath();
-    ctx.ellipse(shineX, shineY, b.radius * 0.45, b.radius * 0.3, -0.5, 0, Math.PI * 2);
-    ctx.fillStyle = shineGrad;
-    ctx.fill();
+  ctx.strokeStyle = s.color + s.opacity + ')';
+  ctx.lineWidth = 1;
 
-    ctx.restore();
-  }
-
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    bubbles.forEach((b, i) => {
-      // Float upward
-      b.y -= b.speed;
-
-      // Gentle left-right wobble
-      b.wobble += b.wobbleSpeed;
-      b.x += Math.sin(b.wobble) * b.wobbleAmount;
-
-      // Draw it
-      drawBubble(b);
-
-      // Reset when it floats off the top
-      if (b.y + b.radius < 0) {
-        bubbles[i] = createBubble(false);
-      }
+  s.sphereL.forEach(line => {
+    const projected = line.map(p => {
+      let r = rotateX(p, s.rotX);
+      r = rotateY(r, s.rotY);
+      r = rotateZ(r, s.rotZ);
+      return project(r, s.x, s.y, s.fov);
     });
 
-    requestAnimationFrame(animate);
-  }
+    ctx.beginPath();
+    ctx.moveTo(projected[0].x, projected[0].y);
+    for (let i = 1; i < projected.length; i++) {
+      ctx.lineTo(projected[i].x, projected[i].y);
+    }
 
-  animate();
+    if (s.solid) {
+      ctx.fillStyle = s.color + s.fillOpacity + ')';
+      ctx.fill();
+    }
+
+    ctx.stroke();
+  });
+}
+
+// ── Animation Loop ──
+
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  shapes.forEach((s, i) => {
+    // Move
+    s.x += s.vx;
+    s.y += s.vy;
+
+    // Rotate
+    s.rotX += s.rotSpeedX;
+    s.rotY += s.rotSpeedY;
+    s.rotZ += s.rotSpeedZ;
+
+    // Bounce off edges
+    const margin = 80;
+    if (s.x < -margin) s.x = canvas.width + margin;
+    if (s.x > canvas.width + margin) s.x = -margin;
+    if (s.y < -margin) s.y = canvas.height + margin;
+    if (s.y > canvas.height + margin) s.y = -margin;
+
+    // Draw
+    if (s.type === 'sphere') {
+      drawSphere(s);
+    } else {
+      drawWireframe(s);
+    }
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
 </script>
 <script>
 let musicFrame;
