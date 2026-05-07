@@ -95,6 +95,17 @@
           <p>Defend the cake from the ladybugs</p>
         </div>
 
+        <div class="slide">
+          <img src="frogger.png" alt="Python project screenshot">
+          <h3>Frogger Game</h3>
+          <p>Eat flies and jump over Shrooms</p>
+        </div>
+
+        <div class="slide">
+          <img src="wave.png" alt="Python project screenshot">
+          <h3>Wellness Wave</h3>
+          <p>A menal health website made bpa competition</p>
+        </div>
 
       </div>
 
@@ -127,6 +138,8 @@
     { url: "https://studio.code.org/projects/gamelab/4e40a128-f6ac-4168-9141-0b20930364cd", label: "Check it Out!" },
     { url: "https://flowlab.io/game/play/2610623", label: "Check it Out!" },
     { url: "https://studio.code.org/projects/gamelab/54f11938-f000-4f88-b1ce-f6e2f46a122e", label: "Check it Out!" },
+    { url: "https://studio.code.org/projects/gamelab/2a3ed059-0395-43ce-927d-c320fd43c89b", label: "Check it Out!" },
+     { url: "https://ashiro17.github.io/WellnessWaveBPA/", label: "Check it Out!" },
   ];
 
   const slides = document.getElementById('slides');
@@ -346,7 +359,7 @@ function sphereLines(size, stacks = 6, slices = 8) {
     const theta = (j / slices) * Math.PI * 2;
     const line = [];
     for (let i = 0; i <= stacks; i++) {
-      const phi = (i / stacks) * Math.PI;
+      const phi = (i / stacks) * Math.PI
       line.push({
         x: size * Math.sin(phi) * Math.cos(theta),
         y: size * Math.cos(phi),
