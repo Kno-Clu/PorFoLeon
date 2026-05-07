@@ -10,24 +10,55 @@
     <img src="banner.png" alt="Banner" style="width: 100%; display: block;">
   </header>
   <nav>
-    <a href="index.html" class="logo">Cannon's Porfolio</a>
+  <div class="nav-left">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">C</div>
+      Cannon's Portfolio
+    </a>
+  </div>
 
-    <ul>
-      <li><a href="index.html" class="nav-link active">Home</a></li>
-      <li><a href="certs.html" class="nav-link">Certifications</a></li>
-      <li><a href="games.html" class="nav-link">Games & More</a></li>
-      <li><a href="https://docs.google.com/document/d/1q7SF2ukgMsfxenHtZbpPK2Q-_2nN9uxtM6MdBdebyY8/edit?usp=sharing" target="_blank" class="nav-link">Resume</a></li>
-    </ul>
-  </nav>
+  <div class="nav-center">
+    <a href="index.html" class="nav-link">🏠 Home</a>
+    <a href="certs.html" class="nav-link">🏆 Certifications</a>
+    <a href="games.html" class="nav-link">🎮 Games</a>
+    <a href="clu.html" class="nav-link">📁 Projects</a>
+    <a href="https://docs.google.com/document/d/1q7SF2ukgMsfxenHtZbpPK2Q-_2nN9uxtM6MdBdebyY8/edit?usp=sharing" target="_blank" class="nav-link">📄 Resume</a>
+  </div>
+
+  <div class="nav-right">
+    <span id="nav-clock">12:00</span>
+    <span class="nav-status">✦ Online</span>
+  </div>
+</nav>
   
   <main class="content">
-    <div>
-  
-
-  <img src="htl.png">
-  <img src="py.png">
+  <div class="page-header">
+    <h1>🏆 Certifications</h1>
   </div>
-  </main>
+  <div class="card-grid">
+
+    <div class="card">
+      <img src="htl.png" class="card-image" alt="HTML cert">
+      <div class="card-body">
+        <div class="card-title">HTML & CSS</div>
+        <div class="card-desc">Built structured web pages with semantic HTML and styled them with CSS.</div>
+        <span class="card-tag">Web Dev</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <img src="py.png" class="card-image" alt="Python cert">
+      <div class="card-body">
+        <div class="card-title">Python</div>
+        <div class="card-desc">Learned core programming concepts including loops, functions, and conditionals.</div>
+        <span class="card-tag">Programming</span>
+      </div>
+    </div>
+
+    <!-- Add more cards here for your other artifacts -->
+
+  </div>
+</main>
   <footer class="footer">
     <p>&copy; 2026 Your Website. All rights reserved.</p> </footer>
 </div>
@@ -433,6 +464,17 @@ document.addEventListener("click", () => {
     console.log("Player not ready yet");
   }
 }, { once: true });
+</script>
+<script>
+  function updateClock() {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2, '0');
+    const m = now.getMinutes().toString().padStart(2, '0');
+    const el = document.getElementById('nav-clock');
+    if (el) el.textContent = `${h}:${m}`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
 </script>
 </body>
 

@@ -18,7 +18,7 @@
   box-sizing: border-box;
 }
 
-/* ── Bubble Canvas — fixed behind everything ── */
+/* ── Bubble Canvas ── */
 #bubble-canvas {
   position: fixed;
   top: 0;
@@ -26,7 +26,7 @@
   width: 100%;
   height: 100%;
   z-index: 0;
-  pointer-events: none; /* lets you click through it */
+  pointer-events: none;
 }
 
 /* ── Body ── */
@@ -38,18 +38,24 @@ body {
   flex-direction: column;
   min-height: 100vh;
 
-  /* 3DS dot grid layered over Wii U radial gradient */
   background:
     radial-gradient(circle, rgba(192,157,195,0.18) 1px, transparent 1px),
     radial-gradient(ellipse at top, #ede3f5 0%, var(--color-light-bg) 60%, #dff0ee 100%);
   background-size: 24px 24px, 100% 100%;
+  
+  
+  cursor: url('mii.png') 16 16, auto;
+
 }
 
-/* ── Wrapper sits above canvas ── */
+
+/* ── Wrapper ── */
 .wrapper {
   position: relative;
   z-index: 1;
   flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ── Banner ── */
@@ -59,55 +65,122 @@ body {
   box-shadow: 0 4px 20px rgba(125,115,144,0.5);
   padding: 0;
   text-align: center;
+  position: relative;
+  z-index: 3;
 }
 
-/* ── Nav ── */
+/* ── iiSU Style Top Nav Bar ── */
 nav {
-  background: linear-gradient(180deg,
-    rgba(255,255,255,0.92) 0%,
-    rgba(240,232,248,0.92) 100%
-  );
-  border-bottom: 1px solid var(--color-border);
-  padding: 8px 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 60px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-  backdrop-filter: blur(12px);
-  position: relative;
-  z-index: 2;
+  padding: 0 20px;
+  height: 52px;
+  gap: 12px;
+
+  background: linear-gradient(180deg,
+    rgba(255,255,255,0.96) 0%,
+    rgba(237,227,245,0.96) 100%
+  );
+  border-bottom: 2px solid var(--color-border);
+  box-shadow: 0 3px 16px rgba(125,115,144,0.2);
+  backdrop-filter: blur(16px);
+}
+
+/* Left — logo */
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .logo {
-  font-size: 16px;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   text-decoration: none;
   color: var(--color-dark);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.logo-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-mid));
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.5),
+    0 2px 0 #8a6090,
+    0 3px 6px rgba(0,0,0,0.15);
+}
+
+/* Center — nav links */
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+/* Right — clock and status */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+#nav-clock {
+  background: linear-gradient(180deg, #e8dff0, #d8cce8);
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-dark);
+  letter-spacing: 1px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.7),
+    0 2px 0 #a090b8,
+    0 3px 6px rgba(0,0,0,0.1);
+}
+
+.nav-status {
+  color: var(--color-accent2);
+  font-size: 11px;
   letter-spacing: 0.5px;
 }
 
-ul {
-  list-style: none;
-  display: flex;
-  gap: 8px;
-  margin: 0;
-  padding: 0;
-  flex-wrap: wrap;
-}
-
-/* ── Glossy Pill Buttons with 3DS depth ── */
+/* ── Glossy Pill Nav Links ── */
 .nav-link {
-  display: block;
-  padding: 7px 18px;
-  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  font-size: 12px;
   font-weight: 600;
   text-decoration: none;
   border-radius: 999px;
   color: white;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
   border: 1px solid rgba(255,255,255,0.3);
-  transition: all 0.2s ease;
+  transition: all 0.18s ease;
+  white-space: nowrap;
 
   background: linear-gradient(180deg,
     #d4b0d8 0%,
@@ -117,9 +190,8 @@ ul {
   );
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.6),
-    inset 0 -1px 0 rgba(0,0,0,0.1),
-    0 3px 0 #8a6090,             /* 3DS hard bottom edge */
-    0 4px 8px rgba(0,0,0,0.2);
+    0 2px 0 #8a6090,
+    0 3px 8px rgba(0,0,0,0.15);
 }
 
 .nav-link:hover {
@@ -132,12 +204,12 @@ ul {
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.7),
     0 3px 0 #607890,
-    0 5px 14px rgba(0,0,0,0.2);
+    0 5px 12px rgba(0,0,0,0.18);
   transform: translateY(-2px);
 }
 
 .nav-link:active {
-  transform: translateY(2px);
+  transform: translateY(1px);
   box-shadow:
     inset 0 2px 4px rgba(0,0,0,0.2),
     0 1px 0 #8a6090;
@@ -151,38 +223,58 @@ ul {
     #5a5070 100%
   );
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.4),
-    inset 0 2px 4px rgba(0,0,0,0.15),
-    0 2px 0 #4a4060;
+    inset 0 1px 0 rgba(255,255,255,0.35),
+    inset 0 2px 5px rgba(0,0,0,0.15),
+    0 1px 0 #4a4060;
 }
 
-/* ── Content ── */
+/* ── Main Content ── */
 .content {
   padding: 24px;
+  flex: 1;
 }
 
-h1, h2, h3 {
-  color: var(--color-dark);
-  text-align: center;
-  margin-bottom: 12px;
+/* ── iiSU Style Page Header ── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding: 14px 20px;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.85) 0%,
+    rgba(237,227,245,0.85) 100%
+  );
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 4px 0 rgba(125,115,144,0.2),
+    0 6px 20px rgba(0,0,0,0.08);
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.4rem;
   text-shadow: 0 1px 3px rgba(255,255,255,0.9);
 }
 
-/* ── Wii Channel Tile Grid ── */
-.tile-grid {
+/* ── iiSU Style Content Cards ── */
+.card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
-  padding: 16px 0;
+  padding: 8px 0;
 }
 
-.tile {
-  border-radius: 20px;
-  padding: 20px 12px;
-  text-align: center;
+.card {
+  border-radius: 18px;
+  overflow: hidden;
   cursor: pointer;
   transition: all 0.2s ease;
-  border: 1px solid rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.9);
+  position: relative;
 
   background: linear-gradient(160deg,
     rgba(255,255,255,0.95) 0%,
@@ -190,23 +282,95 @@ h1, h2, h3 {
   );
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.9),
-    0 4px 0 rgba(125,115,144,0.3),   /* 3DS tile depth edge */
-    0 6px 16px rgba(0,0,0,0.1);
+    0 4px 0 rgba(125,115,144,0.25),
+    0 6px 20px rgba(0,0,0,0.08);
 }
 
-.tile:hover {
-  transform: translateY(-3px) scale(1.03);
+.card:hover {
+  transform: translateY(-4px) scale(1.02);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.9),
-    0 7px 0 rgba(125,115,144,0.3),
-    0 10px 24px rgba(125,115,144,0.25);
+    0 8px 0 rgba(125,115,144,0.25),
+    0 14px 30px rgba(125,115,144,0.2);
 }
 
-.tile:active {
+.card:active {
   transform: translateY(2px) scale(0.98);
   box-shadow:
-    inset 0 2px 4px rgba(0,0,0,0.1),
-    0 2px 0 rgba(125,115,144,0.3);
+    inset 0 2px 6px rgba(0,0,0,0.1),
+    0 2px 0 rgba(125,115,144,0.25);
+}
+
+.card-image {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+
+.card-image-placeholder {
+  width: 100%;
+  height: 130px;
+  background: linear-gradient(135deg, var(--color-accent), var(--color-mid));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+}
+
+.card-body {
+  padding: 12px 14px;
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-dark);
+  margin-bottom: 4px;
+}
+
+.card-desc {
+  font-size: 11px;
+  color: var(--color-text);
+  line-height: 1.4;
+}
+
+.card-tag {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  background: linear-gradient(180deg, #d4b0d8, #a87aae);
+  color: white;
+  box-shadow: 0 1px 0 #8a6090;
+}
+
+/* ── Headings ── */
+h1, h2, h3 {
+  color: var(--color-dark);
+  text-align: center;
+  margin-bottom: 12px;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.9);
+}
+
+/* ── iiSU Style Info Panel ── */
+/* Use this to wrap text sections like your about paragraph */
+.info-panel {
+  background: linear-gradient(160deg,
+    rgba(255,255,255,0.92) 0%,
+    rgba(237,227,245,0.88) 100%
+  );
+  border-radius: 18px;
+  padding: 20px 24px;
+  border: 1px solid rgba(255,255,255,0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 4px 0 rgba(125,115,144,0.2),
+    0 8px 24px rgba(0,0,0,0.07);
+  margin-bottom: 20px;
 }
 
 /* ── Footer ── */
@@ -218,7 +382,8 @@ h1, h2, h3 {
   margin-top: auto;
   border-top: 2px solid var(--color-accent);
   box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
-  font-size: 13px;
+  font-size: 12px;
+  letter-spacing: 0.3px;
   position: relative;
   z-index: 2;
 }
@@ -227,14 +392,14 @@ h1, h2, h3 {
 .carousel {
   position: relative;
   max-width: 800px;
-  margin: 24px auto 0 auto;
+  margin: 0 auto 0 auto;
   overflow: hidden;
   border-radius: 20px;
-  border: 1px solid rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.9);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.9),
     0 6px 0 rgba(125,115,144,0.25),
-    0 10px 30px rgba(0,0,0,0.12);
+    0 10px 30px rgba(0,0,0,0.1);
 }
 
 .slides {
@@ -251,7 +416,6 @@ h1, h2, h3 {
   flex-direction: column;
   justify-content: flex-end;
   min-height: 400px;
-
   background: linear-gradient(160deg,
     rgba(255,248,255,0.98) 0%,
     #ffe8d8 100%
@@ -381,7 +545,6 @@ h1, h2, h3 {
   text-decoration: none;
   display: inline-block;
   transition: all 0.2s ease;
-  letter-spacing: 0.3px;
 
   background: linear-gradient(180deg,
     #d4b0d8 0%,
@@ -416,19 +579,59 @@ h1, h2, h3 {
     0 1px 0 #8a6090;
 }
 
+/* ── Play Game Button (games.html) ── */
+button {
+  color: white;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 9px 24px;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-block;
+  transition: all 0.2s ease;
+  margin: 12px 0;
+
+  background: linear-gradient(180deg,
+    #b8e8c8 0%,
+    #b8e8c8 45%,
+    var(--color-accent2) 50%,
+    #70a890 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.6),
+    0 3px 0 #508870,
+    0 5px 10px rgba(0,0,0,0.15);
+}
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.7),
+    0 5px 0 #508870,
+    0 8px 16px rgba(0,0,0,0.18);
+}
+
+button:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 4px rgba(0,0,0,0.2),
+    0 1px 0 #508870;
+}
+
 /* ── Responsive ── */
-@media (max-width: 600px) {
-  ul {
+@media (max-width: 700px) {
+  nav {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .nav-center {
     flex-wrap: wrap;
     justify-content: center;
   }
-  nav {
-    flex-direction: column;
-    height: auto;
-    padding: 10px;
-    gap: 8px;
-  }
-  .tile-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  .nav-right {
+    display: none;
   }
 }

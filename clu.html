@@ -19,15 +19,26 @@
   </header>
 
   <nav>
-    <a href="index.html" class="logo">Cannon's Portfolio</a>
-    <ul>
-      <li><a href="index.html" class="nav-link">Home</a></li>
-      <li><a href="certs.html" class="nav-link">Certifications</a></li>
-      <li><a href="games.html" class="nav-link">Games & More</a></li>
-      <li><a href="may.html" class="nav-link active">Projects</a></li>
-      <li><a href="https://docs.google.com/document/d/1q7SF2ukgMsfxenHtZbpPK2Q-_2nN9uxtM6MdBdebyY8/edit?usp=sharing" target="_blank" class="nav-link">Resume</a></li>
-    </ul>
-  </nav>
+  <div class="nav-left">
+    <a href="index.html" class="logo">
+      <div class="logo-icon">C</div>
+      Cannon's Portfolio
+    </a>
+  </div>
+
+  <div class="nav-center">
+    <a href="index.html" class="nav-link">🏠 Home</a>
+    <a href="certs.html" class="nav-link">🏆 Certifications</a>
+    <a href="games.html" class="nav-link">🎮 Games</a>
+    <a href="clu.html" class="nav-link">📁 Projects</a>
+    <a href="https://docs.google.com/document/d/1q7SF2ukgMsfxenHtZbpPK2Q-_2nN9uxtM6MdBdebyY8/edit?usp=sharing" target="_blank" class="nav-link">📄 Resume</a>
+  </div>
+
+  <div class="nav-right">
+    <span id="nav-clock">12:00</span>
+    <span class="nav-status">✦ Online</span>
+  </div>
+</nav>
 
   <main class="content">
     <h1>My Projects</h1>
@@ -38,28 +49,50 @@
       <div class="slides" id="slides">
 
         <div class="slide">
-          <img src="htl.png" alt="HTML and CSS project screenshot">
-          <h3>Portfolio Website</h3>
-          <p>Built a multi-page portfolio site from scratch using HTML and CSS. Learned about layouts, flexbox, navigation bars, and SEO meta tags.</p>
-        </div>
-
-        <div class="slide">
-          <img src="py.png" alt="Python project screenshot">
-          <h3>Python Project</h3>
-          <p>Wrote a Python program that demonstrated core programming concepts like loops, functions, and conditionals.</p>
-        </div>
-
-        <div class="slide">
           <img src="bwl.png" alt="Bread Dating Sim">
           <h3>Baked With love</h3>
-          <p>Enter North-Yeast High and date a cast of Bread Based Characters</p>
+          <p>Enter North-Yeast High and date a cast of Bread Based Characters.</p>
         </div>
+
+        <div class="slide">
+          <img src="flyer.png" alt="HTML and CSS project screenshot">
+          <h3>Flappy Game</h3>
+          <p>Help the unicorn get corndogs while avoiing flying rocks</p>
+        </div>
+
+        <div class="slide">
+          <img src="scene.png" alt="Python project screenshot">
+          <h3>Catied Scene</h3>
+          <p>A frog and snake want to work out together</p>
+        </div>
+
+
+        
 
         <div class="slide">
           <img src="chicken.png" alt="Bread Dating Sim" >
           <h3>Why did the chicken cross the road?</h3>
           <p>An interactive card project</p>
         </div>
+
+        <div class="slide">
+          <img src="platform.png" alt="Bread Dating Sim" >
+          <h3>Platformer Project</h3>
+          <p>Collct a many stars as you can while avoiding enemies.</p>
+        </div>
+
+        <div class="slide">
+          <img src="kaboom.png" alt="Python project screenshot">
+          <h3>KaBoom</h3>
+          <p>Rocket jump to the top of the tower and make it go KaBoom!</p>
+        </div>
+
+        <div class="slide">
+          <img src="cake.png" alt="Python project screenshot">
+          <h3>Cake Defender</h3>
+          <p>Defend the cake from the ladybugs</p>
+        </div>
+
 
       </div>
 
@@ -85,10 +118,13 @@
 
 <script>
   const slideLinks = [
-    { url: "https://yourproject1.com", label: "Check it Out!" },
-    { url: "https://yourproject2.com", label: "Check it Out!" },
     { url: "https://studio.code.org/projects/gamelab/72ae4f8c-116f-49b3-9bb4-18049adadac4", label: "Check it Out!" },
+    { url: "https://studio.code.org/projects/gamelab/8cb1b79d-8f32-4ccf-b146-2ed262a3d92e", label: "Check it Out!" },
+    { url: "https://studio.code.org/projects/gamelab/42cf689b-b3c9-412f-ba7a-3f37af1aab30", label: "Check it Out!" },
     { url: "https://studio.code.org/projects/gamelab/82f614cf-861f-407f-8856-03aab805bcd6", label: "Check it Out!" },
+    { url: "https://studio.code.org/projects/gamelab/4e40a128-f6ac-4168-9141-0b20930364cd", label: "Check it Out!" },
+    { url: "https://flowlab.io/game/play/2610623", label: "Check it Out!" },
+    { url: "https://studio.code.org/projects/gamelab/54f11938-f000-4f88-b1ce-f6e2f46a122e", label: "Check it Out!" },
   ];
 
   const slides = document.getElementById('slides');
@@ -536,6 +572,17 @@ document.addEventListener("click", () => {
     console.log("Player not ready yet");
   }
 }, { once: true });
+</script>
+<script>
+  function updateClock() {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2, '0');
+    const m = now.getMinutes().toString().padStart(2, '0');
+    const el = document.getElementById('nav-clock');
+    if (el) el.textContent = `${h}:${m}`;
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
 </script>
 </body>
 
